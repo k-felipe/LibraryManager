@@ -8,6 +8,7 @@ namespace LibraryManager.Core.Entities
 {
     public class Book : BaseEntity
     {
+        protected Book() { }
         public Book(string title, string author, string isbn, int publicationYear) : base()
         {
             Title = title;

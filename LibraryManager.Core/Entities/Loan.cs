@@ -14,6 +14,7 @@ namespace LibraryManager.Core.Entities
             BookId = bookId;
             LoanDate = DateTime.UtcNow;
             DueDate = dueDate;
+            IsCompleted = false;
         }
 
         public int UserId { get; private set; }
