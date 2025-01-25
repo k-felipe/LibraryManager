@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using LibraryManager.Core.Entities;
+﻿using LibraryManager.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManager.Infrastructure.Persistence
 {
@@ -40,7 +40,7 @@ namespace LibraryManager.Infrastructure.Persistence
 
                 l.HasOne(l => l.User)
                 .WithMany(u => u.Loans)
-                .HasForeignKey(l => l.UserId) 
+                .HasForeignKey(l => l.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
                 l.HasOne(l => l.Book)
@@ -50,7 +50,7 @@ namespace LibraryManager.Infrastructure.Persistence
 
             });
 
-            base.OnModelCreating(modelBuilder); 
+            base.OnModelCreating(modelBuilder);
         }
 
 

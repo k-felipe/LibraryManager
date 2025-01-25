@@ -1,11 +1,12 @@
-﻿using LibraryManager.Infrastructure.Persistence;
+﻿using LibraryManager.Application.Models;
+using LibraryManager.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManager.API.Controllers
 {
     [Route("api/loans")]
     [ApiController]
-    public class LoansController :ControllerBase
+    public class LoansController : ControllerBase
     {
         private readonly LibraryManagerDbContext _context;
         public LoansController(LibraryManagerDbContext context)
@@ -16,43 +17,43 @@ namespace LibraryManager.API.Controllers
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            return Ok();
+            var loan = _context.Loans.FirstOrDefault(l => l.Id == id);
+            return Ok(loan);
         }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return NoContent();
+            var loans = _context.Loans.Where(l => !l.IsDeleted).ToList();
+            return Ok(loans);
 
         }
 
         [HttpPost]
-        public IActionResult Post()
+        public IActionResult Post(CreateLoanInputModel model)
         {
-            return NoContent();
+            var loan = model.ToEntity();
+            _context.Loans.Add(loan);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetById), new { id = loan.Id }, model);
         }
 
-        [HttpPut]
-        public IActionResult Put()
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
         {
-            return NoContent();
-        }
+            var loan = _context.Loans.FirstOrDefault(l => l.Id == id);
+            loan.SetAsDeleted();
+            _context.SaveChanges();
 
-        [HttpDelete]
-        public IActionResult Delete()
-        {
-            return NoContent();
-        }
-        [HttpPut("{id}/start")]
-
-        public IActionResult Start()
-        {
             return NoContent();
         }
 
         [HttpPut("{id}/return")]
-        public IActionResult Return()
+        public IActionResult Return(int id)
         {
+            var loan = _context.Loans.FirstOrDefault(l => l.Id == id);
+            loan.Return();
+            _context.SaveChanges();
             return NoContent();
         }
 

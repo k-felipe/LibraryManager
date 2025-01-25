@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibraryManager.Core.Entities
+﻿namespace LibraryManager.Core.Entities
 {
     public class User : BaseEntity
     {
@@ -21,7 +15,7 @@ namespace LibraryManager.Core.Entities
 
         public void Update(string name, string email)
         {
-            if(!string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(name))
                 Name = name;
 
             if (!string.IsNullOrWhiteSpace(name))

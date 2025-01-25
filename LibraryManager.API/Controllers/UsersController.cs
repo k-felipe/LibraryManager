@@ -40,7 +40,7 @@ namespace LibraryManager.API.Controllers
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return CreatedAtAction(nameof(GetById), new { id = user.Id},model);
+            return CreatedAtAction(nameof(GetById), new { id = user.Id }, model);
         }
 
         [HttpPut("{id}")]

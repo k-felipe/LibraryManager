@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibraryManager.Application.Models
+﻿namespace LibraryManager.Application.Models
 {
     public class UpdateUserInputModel
     {
@@ -13,7 +7,7 @@ namespace LibraryManager.Application.Models
             Name = name;
             Email = email;
         }
-        public int Id {  get; private set; }
+        public int Id { get; private set; }
         public string Name { get; private set; }
         public string Email { get; private set; }
 

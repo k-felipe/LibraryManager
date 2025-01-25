@@ -6,7 +6,7 @@ namespace LibraryManager.API.Controllers
 {
     [Route("api/books")]
     [ApiController]
-    public class BooksController :ControllerBase
+    public class BooksController : ControllerBase
     {
         private readonly LibraryManagerDbContext _context;
         public BooksController(LibraryManagerDbContext context)
@@ -39,7 +39,7 @@ namespace LibraryManager.API.Controllers
             _context.Books.Add(book);
             _context.SaveChanges();
 
-            return CreatedAtAction(nameof(GetById), new {id = book.Id}, model);
+            return CreatedAtAction(nameof(GetById), new { id = book.Id }, model);
         }
 
         [HttpPut]

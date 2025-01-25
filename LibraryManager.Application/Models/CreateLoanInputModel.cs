@@ -1,8 +1,10 @@
-﻿namespace LibraryManager.Core.Entities
+﻿using LibraryManager.Core.Entities;
+
+namespace LibraryManager.Application.Models
 {
-    public class Loan : BaseEntity
+    public class CreateLoanInputModel
     {
-        public Loan(int userId, int bookId, DateTime dueDate) : base()
+        public CreateLoanInputModel(int userId, int bookId, DateTime dueDate)
         {
             UserId = userId;
             BookId = bookId;
@@ -12,18 +14,12 @@
         }
 
         public int UserId { get; private set; }
-        public User User { get; private set; }
         public int BookId { get; private set; }
-        public Book Book { get; private set; }
         public DateTime LoanDate { get; private set; }
         public DateTime DueDate { get; private set; }
         public DateTime? ReturnDate { get; private set; }
         public bool IsCompleted { get; private set; }
 
-        public void Return()
-        {
-            ReturnDate = DateTime.UtcNow;
-            IsCompleted = true;
-        }
+        public Loan ToEntity() => new(UserId, BookId, DueDate);
     }
 }
