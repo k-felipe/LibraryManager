@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace LibraryManager.Core.Entities
 {
@@ -22,6 +23,17 @@ namespace LibraryManager.Core.Entities
         public string ISBN { get; private set; }
         public int PublicationYear { get; private set; }
         public ICollection<Loan> Loans { get; private set; } = new List<Loan>();
+
+        public void Update(string title, string author, int publicationYear)
+        {
+            if (!string.IsNullOrWhiteSpace(title))
+                Title = title;
+
+            if (!string.IsNullOrWhiteSpace(author))
+                Title = author;
+
+            PublicationYear = publicationYear;
+        }
 
 
     }
