@@ -1,6 +1,6 @@
 ﻿namespace LibraryManager.Application.Models
 {
-    internal class LoanViewModel
+    public class LoanViewModel
     {
     }
 }

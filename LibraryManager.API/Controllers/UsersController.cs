@@ -1,6 +1,10 @@
 ﻿using LibraryManager.Application.Models;
+using LibraryManager.Core.Entities;
+using LibraryManager.Core.Repositories;
 using LibraryManager.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibraryManager.API.Controllers
 {
@@ -8,63 +12,59 @@ namespace LibraryManager.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly LibraryManagerDbContext _context;
-        public UsersController(LibraryManagerDbContext context)
+        private readonly IUserRepository _repository;
+        public UsersController(IUserRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var user = _context.Users
-                .FirstOrDefault(u => !u.IsDeleted && u.Id == id);
-            return Ok(user);
+            var user = await _repository.GetById(id);
+
+            var model = UserViewModel.FromEntity(user);
+            return Ok(model);
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> GetAsync()
         {
-            var users = _context.Users
-                .Where(u => !u.IsDeleted)
-                .ToList();
-
+            var users = await _repository.GetAll();
+            var model = users.Select(UserViewModel.FromEntity).ToList();
             return Ok(users);
         }
 
         [HttpPost]
-        public IActionResult Post(CreateUserInputModel model)
+        public async Task<IActionResult> PostAsync(CreateUserInputModel model)
         {
             var user = model.ToEntity();
 
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            await _repository.Insert(user);
 
             return CreatedAtAction(nameof(GetById), new { id = user.Id }, model);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, UpdateUserInputModel model)
+        public async Task<IActionResult> PutAsync(int id, UpdateUserInputModel model)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            var user = await _repository.GetById(id);
 
             user.Update(model.Name, model.Email);
 
-            _context.Users.Update(user);
-            _context.SaveChanges();
+            await _repository.Update(user);
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            var user = await _repository.GetById(id);
 
             user.SetAsDeleted();
 
-            _context.Users.Update(user);
-            _context.SaveChanges();
+            await _repository.Update(user);
 
             return NoContent();
         }

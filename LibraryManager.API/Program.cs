@@ -1,5 +1,9 @@
+using LibraryManager.Application.Repositories;
+using LibraryManager.Core.Repositories;
 using LibraryManager.Infrastructure.Persistence;
+using LibraryManager.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +17,9 @@ builder.Services.AddDbContext<LibraryManagerDbContext>(options =>
     options.UseInMemoryDatabase("library_manager"));
 
 
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
 var app = builder.Build();
 

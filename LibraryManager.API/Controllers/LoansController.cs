@@ -1,4 +1,5 @@
 ﻿using LibraryManager.Application.Models;
+using LibraryManager.Core.Repositories;
 using LibraryManager.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,52 +9,53 @@ namespace LibraryManager.API.Controllers
     [ApiController]
     public class LoansController : ControllerBase
     {
-        private readonly LibraryManagerDbContext _context;
-        public LoansController(LibraryManagerDbContext context)
+        private readonly ILoanRepository _repository;
+        public LoansController(ILoanRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var loan = _context.Loans.FirstOrDefault(l => l.Id == id);
+            var loan = await _repository.GetById(id);
             return Ok(loan);
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var loans = _context.Loans.Where(l => !l.IsDeleted).ToList();
+            var loans = await _repository.GetAll();
             return Ok(loans);
 
         }
 
         [HttpPost]
-        public IActionResult Post(CreateLoanInputModel model)
+        public async Task<IActionResult> PostA(CreateLoanInputModel model)
         {
             var loan = model.ToEntity();
-            _context.Loans.Add(loan);
-            _context.SaveChanges();
+            await _repository.Insert(loan);
             return CreatedAtAction(nameof(GetById), new { id = loan.Id }, model);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task <IActionResult> Delete(int id)
         {
-            var loan = _context.Loans.FirstOrDefault(l => l.Id == id);
+            var loan = await _repository.GetById(id);
             loan.SetAsDeleted();
-            _context.SaveChanges();
+
+            await _repository.Update(loan);
 
             return NoContent();
         }
 
         [HttpPut("{id}/return")]
-        public IActionResult Return(int id)
+        public async Task<IActionResult> ReturnAsync(int id)
         {
-            var loan = _context.Loans.FirstOrDefault(l => l.Id == id);
+            var loan = await _repository.GetById(id);
             loan.Return();
-            _context.SaveChanges();
+
+            await _repository.Update(loan);
             return NoContent();
         }
 

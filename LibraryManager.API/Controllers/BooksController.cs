@@ -1,5 +1,5 @@
 ﻿using LibraryManager.Application.Models;
-using LibraryManager.Infrastructure.Persistence;
+using LibraryManager.Application.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManager.API.Controllers
@@ -8,26 +8,29 @@ namespace LibraryManager.API.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly LibraryManagerDbContext _context;
-        public BooksController(LibraryManagerDbContext context)
+        private readonly IBookRepository _repository;
+        public BooksController(IBookRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
+            var book = await _repository.GetById(id);
 
-            return Ok(book);
+            var model = BookViewModel.FromEntity(book);
+
+            return Ok(model);
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var books = _context.Books.ToList();
+            var books = await _repository.GetAll();
+            var model = books.Select(BookViewModel.FromEntity).ToList();
 
-            return Ok(books);
+            return Ok(model);
 
         }
 
@@ -36,31 +39,29 @@ namespace LibraryManager.API.Controllers
         {
             var book = model.ToEntity();
 
-            _context.Books.Add(book);
-            _context.SaveChanges();
+            _repository.Insert(book);
 
             return CreatedAtAction(nameof(GetById), new { id = book.Id }, model);
         }
 
         [HttpPut]
-        public IActionResult Put(int id, UpdateBookInputModel model)
+        public async Task<IActionResult> Put(int id, UpdateBookInputModel model)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
-            book.Update(model.Title, model.Author, model.PublicationYear);
-
-            _context.SaveChanges();
-
+            var book = await _repository.GetById(id);
+            book.Update(book.Title, book.Author, book.PublicationYear);
+            await _repository.Update(book);
+            
             return NoContent();
         }
 
         [HttpDelete]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
+            var book = await _repository.GetById(id);
 
             book.SetAsDeleted();
 
-            _context.SaveChanges();
+            await _repository.Update(book);
             return NoContent();
         }
 

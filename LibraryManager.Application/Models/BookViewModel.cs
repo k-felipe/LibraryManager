@@ -18,5 +18,19 @@ namespace LibraryManager.Application.Models
         public string ISBN { get; private set; }
         public int PublicationYear { get; private set; }
         public ICollection<Loan> Loans { get; private set; } = new List<Loan>();
+
+        public static BookViewModel FromEntity(Book book)
+        {
+            if (book == null)
+                return null;
+
+            return new BookViewModel(
+                book.Title,
+                book.Author,
+                book.ISBN,
+                book.PublicationYear,
+                book.Loans
+            );
+        }
     }
 }
