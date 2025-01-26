@@ -1,10 +1,6 @@
 ﻿using LibraryManager.Application.Models;
-using LibraryManager.Core.Entities;
 using LibraryManager.Core.Repositories;
-using LibraryManager.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibraryManager.API.Controllers
 {

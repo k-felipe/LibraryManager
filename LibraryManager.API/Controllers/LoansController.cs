@@ -1,6 +1,5 @@
 ﻿using LibraryManager.Application.Models;
 using LibraryManager.Core.Repositories;
-using LibraryManager.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManager.API.Controllers
@@ -39,7 +38,7 @@ namespace LibraryManager.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task <IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var loan = await _repository.GetById(id);
             loan.SetAsDeleted();

@@ -1,10 +1,12 @@
-﻿using LibraryManager.Core.Entities;
+﻿using LibraryManager.Application.Models;
+using LibraryManager.Core.Entities;
+using MediatR;
 
-namespace LibraryManager.Application.Models
+namespace LibraryManager.Application.Commands.BookCommands.InsertBook
 {
-    public class CreateBookInputModel
+    public class InsertBookCommand : IRequest<ResultViewModel<int>>
     {
-        public CreateBookInputModel(string title, string author, string iSBN, int publicationYear)
+        public InsertBookCommand(string title, string author, string iSBN, int publicationYear)
         {
             Title = title;
             Author = author;
@@ -21,3 +23,4 @@ namespace LibraryManager.Application.Models
         public Book ToEntity() => new(Title, Author, ISBN, PublicationYear);
     }
 }
+

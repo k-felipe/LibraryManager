@@ -1,8 +1,12 @@
+using LibraryManager.Application.Commands.BookCommands.InsertBook;
 using LibraryManager.Application.Repositories;
 using LibraryManager.Core.Repositories;
 using LibraryManager.Infrastructure.Persistence;
 using LibraryManager.Infrastructure.Repositories;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,9 +17,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddDbContext<LibraryManagerDbContext>(options =>
     options.UseInMemoryDatabase("library_manager"));
 
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblyContaining<InsertBookCommand>());
 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

@@ -1,5 +1,9 @@
-﻿using LibraryManager.Application.Models;
-using LibraryManager.Application.Repositories;
+﻿using LibraryManager.Application.Commands.BookCommands.DeleteBook;
+using LibraryManager.Application.Commands.BookCommands.InsertBook;
+using LibraryManager.Application.Commands.BookCommands.UpdateBook;
+using LibraryManager.Application.Queries.BookQueries.GetAllBooks;
+using LibraryManager.Application.Queries.BookQueries.GetBookById;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManager.API.Controllers
@@ -8,60 +12,54 @@ namespace LibraryManager.API.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly IBookRepository _repository;
-        public BooksController(IBookRepository repository)
+        private readonly IMediator _mediator;
+        public BooksController(IMediator mediator)
         {
-            _repository = repository;
+            _mediator = mediator;
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var book = await _repository.GetById(id);
+            var result = await _mediator.Send(new GetBookByIdQuery(id));
+            if (!result.IsSuccess) return NotFound(result.Message);
 
-            var model = BookViewModel.FromEntity(book);
-
-            return Ok(model);
+            return Ok(result);
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var books = await _repository.GetAll();
-            var model = books.Select(BookViewModel.FromEntity).ToList();
+            var result = await _mediator.Send(new GetAllBooksQuery());
 
-            return Ok(model);
+            return Ok(result);
 
         }
 
         [HttpPost]
-        public IActionResult Post(CreateBookInputModel model)
+        public IActionResult Post(InsertBookCommand command)
         {
-            var book = model.ToEntity();
+            var result = _mediator.Send(command);
 
-            _repository.Insert(book);
-
-            return CreatedAtAction(nameof(GetById), new { id = book.Id }, model);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, command);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(int id, UpdateBookInputModel model)
+        public async Task<IActionResult> Put(int id, UpdateBookCommand command)
         {
-            var book = await _repository.GetById(id);
-            book.Update(book.Title, book.Author, book.PublicationYear);
-            await _repository.Update(book);
-            
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
             return NoContent();
         }
 
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-            var book = await _repository.GetById(id);
-
-            book.SetAsDeleted();
-
-            await _repository.Update(book);
+            var book = await _mediator.Send(new DeleteBookCommand(id));
+            if (!book.IsSuccess)  return BadRequest(book.Message);
             return NoContent();
         }
 
