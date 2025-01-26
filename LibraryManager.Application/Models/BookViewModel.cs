@@ -17,11 +17,11 @@ namespace LibraryManager.Application.Models
         public string Author { get; private set; }
         public string ISBN { get; private set; }
         public int PublicationYear { get; private set; }
-        public ICollection<Loan> Loans { get; private set; } = new List<Loan>();
+        public ICollection<Loan> Loans { get; private set; } = [];
 
         public static BookViewModel FromEntity(Book book)
         {
-            if (book == null)
+            if (book is null)
                 return null;
 
             return new BookViewModel(

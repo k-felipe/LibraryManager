@@ -23,7 +23,7 @@
                 Title = title;
 
             if (!string.IsNullOrWhiteSpace(author))
-                Title = author;
+                Author = author;
 
             PublicationYear = publicationYear;
         }
