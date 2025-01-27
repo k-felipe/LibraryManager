@@ -13,11 +13,7 @@
 
   <ItemGroup>
     <Folder Include="Commands\LoanCommands\" />
-    <Folder Include="Commands\UserCommands\InsertUser\" />
-    <Folder Include="Commands\UserCommands\DeleteUser\" />
-    <Folder Include="Commands\UserCommands\UpdateUser\" />
     <Folder Include="Queries\LoanQueries\" />
-    <Folder Include="Queries\UserQueries\" />
   </ItemGroup>
 
   <ItemGroup>

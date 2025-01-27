@@ -1,5 +1,9 @@
-﻿using LibraryManager.Application.Models;
-using LibraryManager.Core.Repositories;
+﻿using LibraryManager.Application.Commands.UserCommands.DeleteUser;
+using LibraryManager.Application.Commands.UserCommands.InsertUser;
+using LibraryManager.Application.Commands.UserCommands.UpdateUser;
+using LibraryManager.Application.Queries.UserQueries.GetAllUsers;
+using LibraryManager.Application.Queries.UserQueries.GetUserById;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManager.API.Controllers
@@ -8,59 +12,55 @@ namespace LibraryManager.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepository _repository;
-        public UsersController(IUserRepository repository)
+        private readonly IMediator _mediator;
+        public UsersController(IMediator mediator)
         {
-            _repository = repository;
+            _mediator = mediator;
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var user = await _repository.GetById(id);
+            var result = await _mediator.Send(new GetUserByIdQuery(id));
 
-            var model = UserViewModel.FromEntity(user);
-            return Ok(model);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
+            return Ok(result.Data);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> Get()
         {
-            var users = await _repository.GetAll();
-            var model = users.Select(UserViewModel.FromEntity).ToList();
+            var users = await _mediator.Send(new GetAllUsersQuery());
+
             return Ok(users);
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostAsync(CreateUserInputModel model)
+        public async Task<IActionResult> Post(InsertUserCommand command)
         {
-            var user = model.ToEntity();
+            var result = await _mediator.Send(command);
 
-            await _repository.Insert(user);
-
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, model);
+            return CreatedAtAction(nameof(GetById), new { id = result.Data }, command);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsync(int id, UpdateUserInputModel model)
+        public async Task<IActionResult> Put(int id, UpdateUserCommand command)
         {
-            var user = await _repository.GetById(id);
-
-            user.Update(model.Name, model.Email);
-
-            await _repository.Update(user);
+            var result = await _mediator.Send(command);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var user = await _repository.GetById(id);
-
-            user.SetAsDeleted();
-
-            await _repository.Update(user);
+            var result = await _mediator.Send(new DeleteUserCommand(id));
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
 
             return NoContent();
         }

@@ -37,11 +37,11 @@ namespace LibraryManager.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(InsertBookCommand command)
+        public async Task<IActionResult> PostAsync(InsertBookCommand command)
         {
-            var result = _mediator.Send(command);
+            var result = await _mediator.Send(command);
 
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, command);
+            return CreatedAtAction(nameof(GetById), new { id = result.Data }, command);
         }
 
         [HttpPut]
@@ -59,7 +59,7 @@ namespace LibraryManager.API.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var book = await _mediator.Send(new DeleteBookCommand(id));
-            if (!book.IsSuccess)  return BadRequest(book.Message);
+            if (!book.IsSuccess) return BadRequest(book.Message);
             return NoContent();
         }
 

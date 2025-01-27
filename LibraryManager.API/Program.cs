@@ -3,11 +3,7 @@ using LibraryManager.Application.Repositories;
 using LibraryManager.Core.Repositories;
 using LibraryManager.Infrastructure.Persistence;
 using LibraryManager.Infrastructure.Repositories;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
